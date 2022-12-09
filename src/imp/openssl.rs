@@ -280,23 +280,32 @@ impl TlsConnector {
         println!("after init_trust: {:?}", std::time::Instant::now());
 
         let mut connector = SslConnector::builder(SslMethod::tls())?;
+        println!("3: builder : {:?}", std::time::Instant::now());
+
         if let Some(ref identity) = builder.identity {
+            println!("4: before set_certificate : {:?}", std::time::Instant::now());
             connector.set_certificate(&identity.0.cert)?;
+            println!("5: before set_private_key : {:?}", std::time::Instant::now());
             connector.set_private_key(&identity.0.pkey)?;
+            println!("6: before loop : {:?}", std::time::Instant::now());
             for cert in identity.0.chain.iter() {
                 // https://www.openssl.org/docs/manmaster/man3/SSL_CTX_add_extra_chain_cert.html
                 // specifies that "When sending a certificate chain, extra chain certificates are
                 // sent in order following the end entity certificate."
+                println!("7: before add_extra_chain_cert : {:?}", std::time::Instant::now());
                 connector.add_extra_chain_cert(cert.to_owned())?;
             }
         }
+        println!("8: supported_protocols  : {:?}", std::time::Instant::now());
         supported_protocols(builder.min_protocol, builder.max_protocol, &mut connector)?;
 
         if builder.disable_built_in_roots {
+            println!("9: before set_cert_store  : {:?}", std::time::Instant::now());
             connector.set_cert_store(X509StoreBuilder::new()?.build());
         }
 
         for cert in &builder.root_certificates {
+            println!("10: before add_cert  : {:?}", std::time::Instant::now());
             if let Err(err) = connector.cert_store_mut().add_cert((cert.0).0.clone()) {
                 debug!("add_cert error: {:?}", err);
             }
