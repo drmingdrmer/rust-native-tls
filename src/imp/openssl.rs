@@ -279,7 +279,11 @@ impl TlsConnector {
         init_trust();
         println!("after init_trust: {:?}", std::time::Instant::now());
 
-        let mut connector = SslConnector::builder(SslMethod::tls())?;
+        let meth = SslMethod::tls();
+
+        println!("2: before SslConnector::builder: {:?}", std::time::Instant::now());
+
+        let mut connector = SslConnector::builder(meth)?;
         println!("3: builder : {:?}", std::time::Instant::now());
 
         if let Some(ref identity) = builder.identity {
