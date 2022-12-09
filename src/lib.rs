@@ -111,6 +111,8 @@ use std::result;
 #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "ios")))]
 #[macro_use]
 extern crate log;
+extern crate libc;
+
 #[cfg(any(target_os = "macos", target_os = "ios"))]
 #[path = "imp/security_framework.rs"]
 mod imp;
@@ -718,4 +720,21 @@ fn _check_kinds() {
     is_send::<TlsStream<TcpStream>>();
     is_sync::<MidHandshakeTlsStream<TcpStream>>();
     is_send::<MidHandshakeTlsStream<TcpStream>>();
+}
+
+#[cfg(test)]
+mod ttt {
+    use imp;
+
+    #[test]
+    fn test_time() {
+        use std::time::Instant;
+
+        let b = crate::TlsConnector::builder();
+        let t0 = Instant::now();
+        b.build();
+        let d = t0.elapsed();
+        println!("=== build elapsed: {:?}", d);
+
+    }
 }
