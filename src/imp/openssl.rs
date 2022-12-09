@@ -313,6 +313,7 @@ impl TlsConnector {
 
         #[cfg(feature = "alpn")]
         {
+            println!("11: before alpn  : {:?}", std::time::Instant::now());
             if !builder.alpn.is_empty() {
                 // Wire format is each alpn preceded by its length as a byte.
                 let mut alpn_wire_format = Vec::with_capacity(
@@ -323,10 +324,13 @@ impl TlsConnector {
                         .sum::<usize>()
                         + builder.alpn.len(),
                 );
+
+                println!("12: before alpn.iter()  : {:?}", std::time::Instant::now());
                 for alpn in builder.alpn.iter().map(|s| s.as_bytes()) {
                     alpn_wire_format.push(alpn.len() as u8);
                     alpn_wire_format.extend(alpn);
                 }
+                println!("13: before set_alpn_protos  : {:?}", std::time::Instant::now());
                 connector.set_alpn_protos(&alpn_wire_format)?;
             }
         }
@@ -334,8 +338,11 @@ impl TlsConnector {
         #[cfg(target_os = "android")]
         load_android_root_certs(&mut connector)?;
 
+        println!("14: before connector.build()  : {:?}", std::time::Instant::now());
+        let b = connector.build();
+        println!("15: after connector.build()  : {:?}", std::time::Instant::now());
         Ok(TlsConnector {
-            connector: connector.build(),
+            connector: b,
             use_sni: builder.use_sni,
             accept_invalid_hostnames: builder.accept_invalid_hostnames,
             accept_invalid_certs: builder.accept_invalid_certs,
