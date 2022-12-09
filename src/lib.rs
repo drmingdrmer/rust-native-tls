@@ -1,3 +1,5 @@
+#![feature(rustc_private)]
+
 //! An abstraction over platform-specific TLS implementations.
 //!
 //! Many applications require TLS/SSL communication in one form or another as

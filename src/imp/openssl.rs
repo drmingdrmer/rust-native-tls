@@ -275,7 +275,9 @@ pub struct TlsConnector {
 
 impl TlsConnector {
     pub fn new(builder: &TlsConnectorBuilder) -> Result<TlsConnector, Error> {
+        println!("before init_trust: {:?}", std::time::Instant::now());
         init_trust();
+        println!("after init_trust: {:?}", std::time::Instant::now());
 
         let mut connector = SslConnector::builder(SslMethod::tls())?;
         if let Some(ref identity) = builder.identity {
